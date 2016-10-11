@@ -22,24 +22,24 @@ int tun_alloc(char *dev){
     int fd, err;
 
     if( (fd = open("/dev/net/tap", O_RDWR)) < 0 ) {
-        printf("Cannot open TUN/TAP dev");
+        print_err("Cannot open TUN/TAP dev");
         exit(1);
     }
 
-    memset(&ifr, 0, sizeof(ifr));
+    CLEAR(ifr);
 
     /* Flags: IFF_TUN   - TUN device (no Ethernet headers)
      *        IFF_TAP   - TAP device
      *
      *        IFF_NO_PI - Do not provide packet information
      */
-    ifr.ifr_flags = IFF_TAP;
+    ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
     if( *dev ) {
         strncpy(ifr.ifr_name, dev, IFNAMSIZ);
     }
 
     if( (err = ioctl(fd, TUNSETIFF, (void *) &ifr)) < 0 ){
-        printf("ERR: Could not ioctl tun: %s\n", strerror(errno));
+        print_err("ERR: Could not ioctl tun: %s\n", strerror(errno));
         close(fd);
         return err;
     }

@@ -23,3 +23,14 @@ void print_hex(char *str, int len){
     }
     printf("\n");
 }
+
+void print_err(char *str, ...){
+    va_list ap;
+    char buf[BUFLEN];
+
+    va_start(ap, str);
+    vsnprintf(buf, BUFLEN, str, ap);
+    va_end(ap);
+
+    perror(buf);
+}

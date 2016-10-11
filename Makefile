@@ -1,12 +1,13 @@
-vpath %.c src
-vpath %.h headers
-
 CPPFLAGS = -I headers -Wall
 
-objects := main.o utils.o tuntap.o
+src = $(wildcard src/*.c)
+obj = $(patsubst src/%.c, build/%.o, $(src))
 
-tcp-ip: $(objects)
-	$(CC) $(objects) -o tcp-ip
+tcp-ip: $(obj)
+	$(CC) $(obj) -o tcp-ip
+
+build/%.o: src/%.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 clean:
-	rm *.o tcp-ip
+	rm build/*.o tcp-ip
