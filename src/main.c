@@ -18,7 +18,12 @@ int main(int argc, char const *argv[]){
     if (set_if_route(dev, "10.0.0.0/24") != 0)
         printf("ERROR when setting route for if\n");
 
-    read(tun_fd, buf, 100);
+    for(;;){
+        read(tun_fd, buf, 100);
+        print_hex(buf, 100);
+    }
 
     free(dev);
+
+    return 0;
 }
