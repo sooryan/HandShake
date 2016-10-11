@@ -1,1 +1,4 @@
+build/*
+tcp-ip
+*.o
 a.out
