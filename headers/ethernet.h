@@ -3,7 +3,7 @@
 #include <linux/if_ether.h>
 
 // Ethernet header declaration
-struct eth_hdr{
+struct eth_hdr {
     unsigned char dst_mac[6];
     unsigned char src_mac[6];
     unsigned short ethertype;
@@ -11,6 +11,6 @@ struct eth_hdr{
 };
 
 struct eth_hdr* to_eth_hdr(char* buf);
-void print_eth_hdr(struct eth_hdr *ehdr);
+void print_eth_hdr(struct eth_hdr* ehdr);
 
 #endif
