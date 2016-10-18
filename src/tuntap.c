@@ -27,6 +27,7 @@ int tun_alloc(char* dev)
 
     if ((fd = open("/dev/net/tap", O_RDWR)) < 0) {
         print_err("Cannot open TUN/TAP dev");
+        printf("$ sudo mknod /dev/net/tap c 10 200\n");
         exit(1);
     }
 
