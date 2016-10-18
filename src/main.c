@@ -3,12 +3,13 @@
 #include "stdheaders.h"
 #include "tuntap.h"
 #include "utils.h"
+#include "netdev.h"
 
-void handle_frame(int tun_fd, struct eth_hdr* ehdr)
+void handle_frame(struct netdev* netdev, struct eth_hdr* ehdr)
 {
     switch (ehdr->ethertype) {
     case ETH_P_ARP:
-        arp_incoming(tun_fd, ehdr);
+        arp_incoming(netdev, ehdr);
         break;
     case ETH_P_IP:
         printf("Found IPv4\n");
@@ -24,30 +25,23 @@ void handle_frame(int tun_fd, struct eth_hdr* ehdr)
 
 int main(int argc, char const* argv[])
 {
-    int tun_fd;
     char buf[BUFLEN];
     char* dev = calloc(10, 1);
+    struct netdev netdev;
+
     CLEAR(buf);
-    tun_fd = tun_alloc(dev);
-
-    if (set_if_up(dev) != 0)
-        print_err("ERROR when setting up if\n");
-
-    // if (set_if_address(dev, "10.0.0.5/24") != 0)
-    //     print_err("ERROR when setting address for if\n");
-
-    if (set_if_route(dev, "10.0.0.0/24") != 0)
-        print_err("ERROR when setting route for if\n");
+    tun_init(dev);
+    arp_init();
 
     for (;;) {
         struct eth_hdr* ehdr = to_eth_hdr(buf);
-        read(tun_fd, buf, BUFLEN);
+        if (tun_read(buf, BUFLEN) < 0)
+            print_err("ERR: Read from tun_fd: %s\n", strerror(errno));
+
         print_hex(buf, BUFLEN);
         print_eth_hdr(ehdr);
-        handle_frame(tun_fd, ehdr);
+        handle_frame(&netdev, ehdr);
     }
-
-    free(dev);
 
     return 0;
 }

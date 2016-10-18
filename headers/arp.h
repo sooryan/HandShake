@@ -2,11 +2,17 @@
 #define ARP_H
 
 #include "ethernet.h"
+#include "netdev.h"
 #include "stdheaders.h"
 
 #define ARP_ETHERNET 0x0001
 #define ARP_IPV4 0x0800
 #define ARP_REQUEST 0x0001
+
+#define ARP_CACHE_LEN 32
+#define ARP_FREE 0
+#define ARP_WAITING 1
+#define ARP_RESOLVED 2
 
 struct arp_hdr {
     uint16_t hw_type;
@@ -17,6 +23,13 @@ struct arp_hdr {
     unsigned char payload[];
 };
 
+struct arp_cache_entry {
+    uint16_t hw_type;
+    unsigned char src_addr[4];
+    unsigned char src_mac[6];
+    unsigned int state;
+};
+
 struct arp_ipv4 {
     unsigned char src_mac[6];
     unsigned char src_addr[4];
@@ -24,6 +37,7 @@ struct arp_ipv4 {
     unsigned char dst_addr[4];
 };
 
-void arp_incoming(int tun_fd, struct eth_hdr* hdr);
+void arp_init();
+void arp_incoming(struct netdev* netdev, struct eth_hdr* hdr);
 
 #endif
